@@ -1,0 +1,79 @@
+# COMMON APPLICATION PROPERTIES
+server:
+  # start services on random port by default
+  port: 8085
+  # The stop processing uses a timeout which provides a grace period during which existing requests will be allowed to complete but no new requests will be permitted
+  shutdown: graceful
+
+spring:
+  application:
+    name: ams
+  # Enable lazy initialization for beans that use Hibernate's LazyInitializationMode.NONE
+  main:
+    lazy-initialization: false
+  sql:
+    init:
+      platform: postgresql
+      mode: always
+      schema-locations: "classpath:db/schema-postgresql.sql"
+      data-locations: "classpath:db/data-postgresql.sql"
+  jpa:
+    # Spring Boot by default registers OpenEntityManagerInViewInterceptor
+    # to apply the “Open EntityManager in View” pattern, to allow for lazy loading in web views.
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+      # no generation for database schema
+    generate-ddl: true
+  datasource:
+    username: u
+    password: p
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/ams_db
+
+# Logging
+logging:
+  file:
+    name: log/${spring.application.name}-logs.log
+  logback:
+    rollingpolicy:
+      max-file-size: 1MB
+      total-size-cap: 5MB
+      max-history: 5
+      clean-history-on-start: true
+  level:
+    root: INFO
+    org.springframework.boot.autoconfigure: INFO
+    org.springframework.orm.jpa: INFO
+    org.springframework.transaction: INFO
+    org.springframework.boot: INFO
+    org.springframework.web: INFO
+    org.hibernate.stat: INFO
+    org.hibernate.type: INFO
+
+# Metrics
+management:
+  endpoint:
+    health:
+      show-details: always
+      probes:
+        enabled: true
+    prometheus:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        # Enable all Actuators and not only the two available by default /health and /info starting Spring Boot 2.0
+        include: "*"
+
+debug: false
+
+# to be referenced in logback-spring.xml
+app:
+  start-time: "09:00"
+  end-time: "22:00"
+
+
+springdoc:
+  swagger-ui:
+    enabled: true

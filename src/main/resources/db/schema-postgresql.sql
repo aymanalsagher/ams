@@ -1,0 +1,43 @@
+set
+    search_path = "public";
+
+
+-- Entities Tables
+CREATE TABLE if not exists PATIENT
+(
+    ID         BIGINT  NOT NULL,
+    FIRST_NAME VARCHAR NOT NULL,
+    LAST_NAME  VARCHAR NOT NULL,
+    CONSTRAINT PK__PATIENT__ID PRIMARY KEY (ID)
+);
+
+
+CREATE TABLE if not exists APPOINTMENT
+(
+    ID                  BIGINT                   NOT NULL,
+    SLOT_TIME           timestamp with time zone NOT NULL,
+    PATIENT_ID          BIGINT                   NOT NULL,
+    CANCELLATION_REASON VARCHAR,
+
+    CONSTRAINT PK__APPOINTMENT__ID PRIMARY KEY (ID),
+    CONSTRAINT FK__APPOINTMENT__PATIENT FOREIGN KEY (PATIENT_ID) REFERENCES PATIENT (ID)
+);
+
+-- Sequence Tables
+CREATE TABLE if not exists APP_SEQ_GENERATOR
+(
+    SEQ_NAME  VARCHAR(100) NOT NULL,
+    SEQ_VALUE BIGINT       NOT NULL
+);
+
+-- Must have data
+DO
+'
+BEGIN
+IF NOT EXISTS (SELECT 1 FROM APP_SEQ_GENERATOR) THEN
+    INSERT INTO APP_SEQ_GENERATOR
+    VALUES (''PATIENT_SEQ_PK'', 1),
+        (''APPOINTMENT_SEQ_PK'', 1);
+    END IF;
+END;
+' LANGUAGE PLPGSQL;
